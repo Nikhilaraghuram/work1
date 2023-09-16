@@ -15,9 +15,9 @@ module fifo #(parameter DEPTH=1024, DATA_WIDTH=128, UPP_TH=4 , LOW_TH=2 ) (
 
   reg [127:0] fifo_mem [0:DEPTH-1];   // FIFO memory
 
-  reg [9:0] read_ptr = 0;   // Read pointer
-  reg [9:0] write_ptr = 0;  // Write pointer
-  reg [9:0] count = 0;      // Count of valid data in the FIFO
+  reg [10:0] read_ptr = 0;   // Read pointer
+  reg [10:0] write_ptr = 0;  // Write pointer
+  reg [10:0] count = 0;      // Count of valid data in the FIFO
 
   always @(posedge clk ) begin
     if (!rstn) begin
@@ -38,7 +38,7 @@ module fifo #(parameter DEPTH=1024, DATA_WIDTH=128, UPP_TH=4 , LOW_TH=2 ) (
       if (i_rden && (count > 0)) begin
         o_rddata <= fifo_mem[read_ptr];
         read_ptr <= read_ptr + 1;
-        count <= count - 1;
+        count--;
        
       end
     end
