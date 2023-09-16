@@ -32,12 +32,12 @@ class fifo_driver extends uvm_driver#(fifo_transaction);
       
       seq_item_port.get_next_item(trans);
     
-       if(trans.i_wren == 1 && trans.i_rden==0)
+       if(trans.i_wren == 1 )
              fifo_write(trans.i_wrdata);
-       if(trans.i_wren==0  && trans.i_rden==1)
+       if(trans.i_rden == 1)
              fifo_read();
-       if(trans.i_wren==1  && trans.i_rden==1)
-         fifo_write_read(trans.i_wrdata);
+//        if(trans.i_wren==1  && trans.i_rden==1)
+//          fifo_write_read(trans.i_wrdata);
       seq_item_port.item_done();
     end 
   endtask
@@ -46,7 +46,7 @@ class fifo_driver extends uvm_driver#(fifo_transaction);
   virtual task fifo_write(input [`DATA_W-1:0] din);
     @(posedge vif.drv.drv_cb)
           vif.drv.drv_cb.i_wren<=1;
-          vif.drv.drv_cb.i_rden<=0;
+          vif.drv.drv_cb.i_rden<=trans.i_rden;
           vif.drv.drv_cb.i_wrdata<=din;
     @(posedge vif.drv.drv_cb)
          vif.drv.drv_cb.i_wren<=0;
@@ -56,7 +56,7 @@ class fifo_driver extends uvm_driver#(fifo_transaction);
   //driver read
  virtual task fifo_read();
    @(posedge vif.drv.drv_cb)
-    vif.drv.drv_cb.i_wren <=0;
+    vif.drv.drv_cb.i_wren <=trans.i_wren;
     vif.drv.drv_cb.i_rden <=1;
    @(posedge vif.drv.drv_cb)
      vif.drv.drv_cb.i_wren <=0;
@@ -64,15 +64,15 @@ class fifo_driver extends uvm_driver#(fifo_transaction);
   endtask
 
   //driver  write read
-   virtual task fifo_write_read( input [`DATA_W-1:0] din);
-     @(posedge vif.drv.drv_cb)
-        vif.drv.drv_cb.i_wren<=1'b1;
-        vif.drv.drv_cb.i_rden<=1'b1;
-        vif.drv.drv_cb.i_wrdata<=din;    
-     @(posedge vif.drv.drv_cb)
-        vif.drv.drv_cb.i_wren<=0;
-        vif.drv.drv_cb.i_rden<=0;
-  endtask 
+//    virtual task fifo_write_read( input [`DATA_W-1:0] din);
+//      @(posedge vif.drv.drv_cb)
+//         vif.drv.drv_cb.i_wren<=1'b1;
+//         vif.drv.drv_cb.i_rden<=1'b1;
+//         vif.drv.drv_cb.i_wrdata<=din;    
+//      @(posedge vif.drv.drv_cb)
+//         vif.drv.drv_cb.i_wren<=0;
+//         vif.drv.drv_cb.i_rden<=0;
+//   endtask 
 
   
 endclass: fifo_driver
