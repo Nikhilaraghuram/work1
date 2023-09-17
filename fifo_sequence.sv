@@ -41,6 +41,20 @@ class fifo_sequence extends uvm_sequence#(fifo_transaction);
         assert(tx.randomize() with {(i_wren ==1 && i_rden==1);});
        finish_item(tx);
      end
+
+        // alternate write read
+    repeat(`DEPTH ) 
+     begin
+       tx=fifo_transaction::type_id::create("tx");
+       start_item(tx);
+       assert(tx.randomize() with {(i_wren ==1 && i_rden==0);});
+       finish_item(tx);
+       
+       tx=fifo_transaction::type_id::create("tx");
+       start_item(tx);
+              assert(tx.randomize() with {(i_wren ==0 &&  i_rden==1);});
+       finish_item(tx);
+     end
    
   endtask:body 
    
